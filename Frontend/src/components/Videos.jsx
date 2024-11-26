@@ -20,7 +20,7 @@ function Videos() {
         const getAllVideos = await videoAPI.allVideos();
         if (getAllVideos) {
           setAllVideos(getAllVideos.data.data);
-          // setLoading(false);
+          setLoading(false);
           // console.log("All Videos:", getAllVideos.data.data);
         }
       } catch (error) {
