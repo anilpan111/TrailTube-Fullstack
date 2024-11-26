@@ -6,7 +6,7 @@ import { Card, Skeleton } from "@nextui-org/react";
 function Videos() {
   const [allVideos, setAllVideos] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
