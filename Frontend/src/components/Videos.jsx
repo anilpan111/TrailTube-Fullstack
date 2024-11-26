@@ -1,24 +1,31 @@
 import React, { useEffect, useState } from "react";
 import videoAPI from "../APIHandling/videosAPI";
-import { useNavigate,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { Card, Skeleton } from "@nextui-org/react";
 
 function Videos() {
   const [allVideos, setAllVideos] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  const loadingBox = Array(6).fill(null);
 
   // const {video}
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const getAllVideos = await videoAPI.allVideos();
         if (getAllVideos) {
           setAllVideos(getAllVideos.data.data);
+          // setLoading(false);
           // console.log("All Videos:", getAllVideos.data.data);
         }
       } catch (error) {
         // setErrorMessage(error.data.message);
+        setLoading(true);
         console.log(error);
       }
     })();
@@ -65,22 +72,43 @@ function Videos() {
     } else {
       result = `${seconds} second${seconds > 1 ? "s" : ""}`;
     }
-    return result
+    return result;
   };
-
 
   return (
     <div className="text-white">
       <div className="h-auto md:ml-[15%]  md:max-w-[80%]  z-0 flex flex-col justify-center  mx-auto ">
-        <ul className="grid grid-cols-1 md:grid-cols-3 gap-4  mt-32 w-full "
-        
-        >
+        {loading && (
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-4  mt-32 w-full ">
+            {loadingBox.map((_, index) => (
+              <li key={index} className="  m-5 max-h-[16rem] h-[16rem] rounded-2xl">
+                <Card className="w-[14rem ] space-y-5 p-4 bg-black" radius="lg" classNames="bg-dark">
+                <Skeleton className="rounded-lg bg-gray-800 ">
+                  <div className="h-24 rounded-lg bg-default-300"></div>
+                </Skeleton>
+                <div className="space-y-3">
+                  <Skeleton className="w-3/5 rounded-lg  bg-gray-800">
+                    <div className="h-3 w-3/5 rounded-lg bg-default-200 "></div>
+                  </Skeleton>
+                  <Skeleton className="w-4/5 rounded-lg  bg-gray-800">
+                    <div className="h-3 w-4/5 rounded-lg bg-default-200"></div>
+                  </Skeleton>
+                  <Skeleton className="w-2/5 rounded-lg  bg-gray-800">
+                    <div className="h-3 w-2/5 rounded-lg bg-default-300"></div>
+                  </Skeleton>
+                </div>
+              </Card>
+              </li>
+            ))}
+          </ul>
+        )}
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-4  mt-32 w-full ">
           {allVideos?.map((video) => (
             <li
               key={video._id}
               className=" cursor-pointer m-5 max-h-[16rem] h-[16rem] rounded-2xl hover:bg-colorLevel2 bg-colorLevel2 md:bg-colorLevel1"
-              onClick={()=>{
-                navigate(`/video/play/${video._id}`)
+              onClick={() => {
+                navigate(`/video/play/${video._id}`);
               }}
             >
               <img
@@ -100,10 +128,11 @@ function Videos() {
                   <h2 className="w-full  font-bold truncate ">{video.title}</h2>
                   <div className="flex justify-between w-full">
                     <h3 className="flex truncate mr-2">{video.channelName}</h3>
-                    <p className="flex w-auto truncate pr-2">{uploadedTime(video.createdAt)} ago</p>
+                    <p className="flex w-auto truncate pr-2">
+                      {uploadedTime(video.createdAt)} ago
+                    </p>
                   </div>
                 </div>
-                
               </div>
             </li>
           ))}
